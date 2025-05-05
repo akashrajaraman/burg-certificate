@@ -245,9 +245,9 @@
     </div>
 
     <script>
-        // Function to generate random numbers
-        function generateRandomNumbers(length) {
-            const characters = '0123456789';
+        // Function to generate random alphanumeric ID
+        function generateRandomId(length) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
             for (let i = 0; i < length; i++) {
                 result += characters.charAt(Math.floor(Math.random() * characters.length));
@@ -255,26 +255,10 @@
             return result;
         }
 
-        // Get current date in DDMMYYYY format
-        function getCurrentDateFormatted() {
-            const today = new Date();
-            const day = String(today.getDate()).padStart(2, '0');
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const year = today.getFullYear();
-            return day + month + year;
-        }
-
-        // Generate certificate ID in format: currentdate+randomnumbers (e.g., 05052025746)
-        function generateCertificateId() {
-            const datePart = getCurrentDateFormatted();
-            const randomPart = generateRandomNumbers(3); // 3 random digits
-            return datePart + randomPart;
-        }
-
-        // Generate and display certificate ID
-        document.getElementById('certificate-id').textContent = generateCertificateId();
+        // Generate and display random 8-digit ID
+        document.getElementById('certificate-id').textContent = generateRandomId(8);
         
-        // Get current date and format it for display
+        // Get current date and format it
         const currentDate = new Date();
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
         const formattedDate = currentDate.toLocaleDateString('en-US', options);
