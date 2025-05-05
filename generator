@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BURG Certificate Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Georgia&family=Arial&display=swap" rel="stylesheet">
+    <style>
+        /* Main styling */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        /* Certificate container - A4 landscape size */
+        .certificate-container {
+            width: 297mm; /* A4 width */
+            height: 210mm; /* A4 height */
+            position: relative;
+            background-image: url('https://m.media-amazon.com/images/I/61k1UAaULoL._AC_UF1000,1000_QL80_.jpg');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        /* White overlay for readability */
+        .certificate-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Certificate content */
+        .certificate-content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            padding: 20mm;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        /* Border with logo embellishments */
+        .border-decoration {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            z-index: 2;
+        }
+        
+        .top-left { top: 10px; left: 10px; }
+        .top-right { top: 10px; right: 10px; }
+        .bottom-left { bottom: 10px; left: 10px; }
+        .bottom-right { bottom: 10px; right: 10px; }
+        
+        /* Main title */
+        .certificate-title {
+            font-size: 36pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        /* Presented to text */
+        .presented-to {
+            font-size: 14pt;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        /* Recipient name */
+        .recipient-name {
+            font-size: 32pt;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 15px;
+            width: 80%;
+        }
+        
+        /* Achievement text */
+        .achievement-text {
+            font-size: 18pt;
+            margin: 15px 0;
+            color: #555;
+            font-style: italic;
+        }
+        
+        /* Date and ID */
+        .certificate-details {
+            font-size: 12pt;
+            margin: 10px 0;
+            color: #555;
+        }
+        
+        /* Signature area */
+        .signature-area {
+            margin-top: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+        }
+        
+        .signature-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
+        }
+        
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 30%;
+        }
+        
+        .signature {
+            font-family: 'Great Vibes', cursive;
+            font-size: 36pt;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        
+        .signature-title {
+            font-size: 12pt;
+            color: #555;
+            border-top: 1px solid #2c3e50;
+            padding-top: 5px;
+            display: inline-block;
+        }
+        
+        /* QR code styling */
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 5px;
+        }
+        
+        .qr-text {
+            font-size: 10pt;
+            color: #555;
+        }
+        
+        /* Footer text */
+        .footer-text {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 10pt;
+            color: #777;
+        }
+        
+        /* Print-specific styles */
+        @media print {
+            body {
+                background: none;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .certificate-container {
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+            }
+            
+            /* Hide any non-certificate elements during print */
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-container">
+        <!-- Border decorations with logo -->
+        <img src="https://i.ibb.co/WNZSVx6c/burg-bg.jpg" class="border-decoration top-left">
+        <img src="https://i.ibb.co/WNZSVx6c/burg-bg.jpg" class="border-decoration top-right">
+        <img src="https://i.ibb.co/WNZSVx6c/burg-bg.jpg" class="border-decoration bottom-left">
+        <img src="https://i.ibb.co/WNZSVx6c/burg-bg.jpg" class="border-decoration bottom-right">
+        
+        <div class="certificate-content">
+            <div class="certificate-title">Certificate of Excellence</div>
+            
+            <div class="presented-to">This certificate is proudly presented to</div>
+            
+            <div class="recipient-name">Akash Rajaraman</div>
+            
+            <div class="achievement-text">
+                in recognition of Completion of Internship in<br>
+                <strong>Sales & Promotion</strong>
+            </div>
+            
+            <div class="certificate-details">
+                Awarded this <strong>2nd June, 2025</strong><br>
+                Certificate ID: <strong id="certificate-id"></strong>
+            </div>
+            
+            <div class="signature-area">
+                <div class="signature-container">
+                    <div class="signature">Alankar<br>Bezbaruah</div>
+                    <div class="signature-title">Co-founder & COO</div>
+                </div>
+                
+                <div class="qr-container">
+                    <img src="https://i.ibb.co/Y4v20G8f/qrcode-201681503-7190082d8edc25eb5f41643e907034c0.png" class="qr-code">
+                    <div class="qr-text">Scan QR to verify</div>
+                </div>
+                
+                <div class="signature-container">
+                    <div class="signature">Akash<br>Rajaraman</div>
+                    <div class="signature-title">Founder & Director</div>
+                </div>
+            </div>
+            
+            <div class="footer-text">
+                This certificate is digitally generated and verified by BURG.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to generate random alphanumeric ID
+        function generateRandomId(length) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        // Generate and display random 8-digit ID
+        document.getElementById('certificate-id').textContent = generateRandomId(8);
+        
+        // Get current date and format it
+        const currentDate = new Date();
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        const formattedDate = currentDate.toLocaleDateString('en-US', options);
+        
+        // Update date in the certificate
+        const dateElements = document.querySelectorAll('.certificate-details strong');
+        if (dateElements.length > 0) {
+            dateElements[0].textContent = formattedDate;
+        }
+    </script>
+</body>
+</html>
