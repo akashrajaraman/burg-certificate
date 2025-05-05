@@ -6,7 +6,6 @@
   <style>
     .burg-blue { background-color: #1a237e; }
     .burg-blue:hover { background-color: #303f9f; }
-    .hidden { display: none; }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -15,14 +14,11 @@
     <div class="container mx-auto flex items-center">
       <img src="https://i.ibb.co/vCp2XwHJ/newstampburg.png" alt="BURG Logo" class="h-12 mr-4">
       <h1 class="text-xl font-bold">BURG Certificate Verification</h1>
-      <button id="adminBtn" class="ml-auto bg-white text-blue-900 px-3 py-1 rounded text-sm">
-        Admin Mode
-      </button>
     </div>
   </nav>
 
   <!-- Verification Section -->
-  <div id="verificationSection" class="container mx-auto mt-10 p-6 max-w-md">
+  <div class="container mx-auto mt-10 p-6 max-w-md">
     <div class="bg-white rounded-lg shadow-md p-6">
       <h2 class="text-2xl font-bold mb-4">Verify Certificate</h2>
       <input 
@@ -41,97 +37,29 @@
     </div>
   </div>
 
-  <!-- Admin Section (Hidden by default) -->
-  <div id="adminSection" class="container mx-auto mt-10 p-6 hidden">
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-2xl font-bold mb-4">Admin Panel</h2>
-      
-      <!-- Certificate Management -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold mb-2">Add/Edit Certificate</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <input id="certId" placeholder="Certificate ID" class="border p-2 rounded">
-          <input id="certName" placeholder="Name" class="border p-2 rounded">
-          <input id="certType" placeholder="Type" class="border p-2 rounded">
-          <input id="certDate" type="date" class="border p-2 rounded">
-        </div>
-        <input id="certFileUrl" placeholder="Document URL" class="border p-2 rounded w-full mb-4">
-        <button onclick="saveCertificate()" class="burg-blue text-white px-4 py-2 rounded">
-          Save Certificate
-        </button>
-      </div>
-
-      <!-- Current Certificates -->
-      <div>
-        <h3 class="text-lg font-semibold mb-2">Current Certificates</h3>
-        <div class="overflow-x-auto">
-          <table class="min-w-full border">
-            <thead>
-              <tr class="bg-gray-100">
-                <th class="p-2 border">ID</th>
-                <th class="p-2 border">Name</th>
-                <th class="p-2 border">Type</th>
-                <th class="p-2 border">Date</th>
-                <th class="p-2 border">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="certTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Data Management -->
-      <div class="mt-6 pt-4 border-t">
-        <h3 class="text-lg font-semibold mb-2">Data Management</h3>
-        <button onclick="downloadCSV()" class="bg-green-700 text-white px-4 py-2 rounded mr-2">
-          Export CSV
-        </button>
-        <button onclick="document.getElementById('csvUpload').click()" class="bg-blue-700 text-white px-4 py-2 rounded">
-          Import CSV
-        </button>
-        <input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="uploadCSV(this)">
-      </div>
-    </div>
-  </div>
-
   <script>
     // Global variable to store certificates
     let certificates = [];
 
     // Initialize the app
-    document.addEventListener('DOMContentLoaded', function() {
-      loadCertificates();
-      
-      // Admin mode toggle
-      document.getElementById('adminBtn').addEventListener('click', function() {
-        const adminSection = document.getElementById('adminSection');
-        const verificationSection = document.getElementById('verificationSection');
-        
-        if (adminSection.classList.contains('hidden')) {
-          const code = prompt('Enter admin code:');
-          if (code === 'AKASHADMIN') {
-            adminSection.classList.remove('hidden');
-            verificationSection.classList.add('hidden');
-            this.textContent = 'User Mode';
-          }
-        } else {
-          adminSection.classList.add('hidden');
-          verificationSection.classList.remove('hidden');
-          this.textContent = 'Admin Mode';
-        }
-      });
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadCertificates();
     });
 
-    // Load certificates from CSV
+    // Load certificates from GitHub CSV
     async function loadCertificates() {
       try {
-        const response = await fetch('certificates.csv');
+        const response = await fetch('https://raw.githubusercontent.com/akashrajaraman/burg-certificate/main/certificates.csv');
         const csvData = await response.text();
         certificates = parseCSV(csvData);
-        renderCertificatesTable();
       } catch (error) {
         console.error("Error loading CSV:", error);
         certificates = [];
+        document.getElementById('result').innerHTML = `
+          <div class="p-4 bg-red-100 text-red-700 rounded border border-red-300">
+            Error loading certificate database. Please try again later.
+          </div>
+        `;
       }
     }
 
@@ -152,6 +80,15 @@
     function verifyCertificate() {
       const code = document.getElementById('certCode').value.trim();
       const resultDiv = document.getElementById('result');
+
+      if (!code) {
+        resultDiv.innerHTML = `
+          <div class="p-4 bg-yellow-100 text-yellow-700 rounded border border-yellow-300">
+            Please enter a certificate code to verify.
+          </div>
+        `;
+        return;
+      }
 
       const cert = certificates.find(c => c.id === code);
       
@@ -178,130 +115,6 @@
           </div>
         `;
       }
-    }
-
-    // Admin functions
-    function renderCertificatesTable() {
-      const tbody = document.getElementById('certTableBody');
-      tbody.innerHTML = certificates.map(cert => `
-        <tr class="border-t">
-          <td class="p-2 border">${cert.id}</td>
-          <td class="p-2 border">${cert.name}</td>
-          <td class="p-2 border">${cert.type}</td>
-          <td class="p-2 border">${cert.issue_date}</td>
-          <td class="p-2 border">
-            <button onclick="editCertificate('${cert.id}')" class="text-blue-600 hover:underline mr-2">
-              Edit
-            </button>
-            <button onclick="deleteCertificate('${cert.id}')" class="text-red-600 hover:underline">
-              Delete
-            </button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function editCertificate(id) {
-      const cert = certificates.find(c => c.id === id);
-      if (cert) {
-        document.getElementById('certId').value = cert.id;
-        document.getElementById('certName').value = cert.name;
-        document.getElementById('certType').value = cert.type;
-        document.getElementById('certDate').value = cert.issue_date;
-        document.getElementById('certFileUrl').value = cert.download_url || '';
-      }
-    }
-
-    function deleteCertificate(id) {
-      if (confirm(`Delete certificate ${id}?`)) {
-        certificates = certificates.filter(c => c.id !== id);
-        renderCertificatesTable();
-        saveCSV();
-      }
-    }
-
-    function saveCertificate() {
-      const id = document.getElementById('certId').value.trim();
-      const name = document.getElementById('certName').value.trim();
-      const type = document.getElementById('certType').value.trim();
-      const date = document.getElementById('certDate').value;
-      const fileUrl = document.getElementById('certFileUrl').value.trim();
-
-      if (!id || !name || !type || !date) {
-        alert('Please fill all required fields');
-        return;
-      }
-
-      // Update or add new certificate
-      const existingIndex = certificates.findIndex(c => c.id === id);
-      const newCert = {
-        id,
-        name,
-        type,
-        issue_date: date,
-        download_url: fileUrl
-      };
-
-      if (existingIndex >= 0) {
-        certificates[existingIndex] = newCert;
-      } else {
-        certificates.push(newCert);
-      }
-
-      // Clear form and refresh
-      document.getElementById('certId').value = '';
-      document.getElementById('certName').value = '';
-      document.getElementById('certType').value = '';
-      document.getElementById('certDate').value = '';
-      document.getElementById('certFileUrl').value = '';
-
-      renderCertificatesTable();
-      saveCSV();
-      alert('Certificate saved!');
-    }
-
-    // CSV handling
-    function saveCSV() {
-      if (certificates.length === 0) return;
-
-      const headers = Object.keys(certificates[0]);
-      const csvContent = [
-        headers.join(','),
-        ...certificates.map(cert => 
-          headers.map(header => `"${cert[header] || ''}"`).join(',')
-        )
-      ].join('\n');
-
-      // Create download link
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'certificates.csv';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function downloadCSV() {
-      saveCSV();
-    }
-
-    function uploadCSV(input) {
-      const file = input.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const csvData = e.target.result;
-        certificates = parseCSV(csvData);
-        renderCertificatesTable();
-        saveCSV();
-        alert('CSV imported successfully!');
-      };
-      reader.readAsText(file);
-      input.value = ''; // Reset file input
     }
   </script>
 </body>
